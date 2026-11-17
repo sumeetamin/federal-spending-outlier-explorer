@@ -1,4 +1,4 @@
-""""Fetch a reproducible bounded USAspending.gov FY2025 award sample."""
+"""Fetch a reproducible bounded USAspending.gov FY2025 award sample."""
 import csv
 import time
 from pathlib import Path
