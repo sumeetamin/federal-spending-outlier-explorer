@@ -1,0 +1,71 @@
+{
+  "project": "Federal Spending Outlier Explorer",
+  "run_date": "2026-11-17",
+  "source": "USAspending.gov spending_by_award API",
+  "endpoint": "https://api.usaspending.gov/api/v2/search/spending_by_award/",
+  "query": {
+    "fiscal_year_activity_period": {
+      "start_date": "2024-10-01",
+      "end_date": "2025-09-30"
+    },
+    "award_type_codes": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "pages": 10,
+    "page_size": 100,
+    "sort": "Award Amount",
+    "order": "desc",
+    "subawards": false,
+    "interpretation": "Activity-period filter and total-award-amount sort; not FY2025 obligations or awards started during FY2025. Bounded top-award sample, not representative."
+  },
+  "local_input": {
+    "path": "outputs/federal_spending/awards.csv",
+    "sha256": "e018016c3e9844c24f4f45aadbd9842af5cb78607948c6e8c7c4601d28b9b217",
+    "rows": 1000,
+    "unique_api_internal_ids": 1000,
+    "distinct_display_award_ids": 991,
+    "awarding_agencies": 18,
+    "total_award_amount_usd": {
+      "min": 579388198.76,
+      "median": 1074630134.925,
+      "max": 51269205263.03
+    },
+    "award_start_dates_observed": [
+      "1978-09-15",
+      "2028-12-31"
+    ]
+  },
+  "method": {
+    "model": "IsolationForest",
+    "n_estimators": 300,
+    "random_state": 42,
+    "contamination": 0.01,
+    "features": [
+      "log1p(total award amount)",
+      "within-sample awarding agency frequency"
+    ],
+    "records_scored": 1000,
+    "records_flagged": 10,
+    "flagged_amount_usd": {
+      "min": 3279484506.76,
+      "max": 51269205263.03
+    },
+    "flagged_awarding_agencies": {
+      "Agency for International Development": 1,
+      "Department of Defense": 7,
+      "Department of Energy": 1,
+      "National Science Foundation": 1
+    }
+  },
+  "interpretation": "Unlabeled statistical review queue only. No ground-truth fraud/waste labels or adjudication; no precision/recall, causal, value-for-money, or misconduct claim.",
+  "limitations": [
+    "API sample is sorted by total award amount and capped at the top 1,000 records, causing selection bias.",
+    "The API activity-period filter is not a filter on award start date or FY2025 obligations.",
+    "The 1% contamination setting controls the approximate review queue size and is not an estimated event prevalence.",
+    "The model and agency frequencies are fit on the same bounded sample."
+  ]
+}
+
